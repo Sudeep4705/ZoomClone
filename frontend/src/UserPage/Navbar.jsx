@@ -1,0 +1,38 @@
+import { Link, Links } from "react-router-dom";
+import '@fontsource/space-mono';
+import '@fontsource-variable/montserrat';
+import { useState } from "react";
+export default function Navbar(){
+    const [open,setopen] =  useState(false)
+    return(
+        <>
+        <div className="navbar w-full h-20 bg-transparent shadow-none fixed inset-0 flex justify-between items-center z-56 ">
+            <div className="nav-start text-white text-4xl w-[70%] ml-6 font-bold" style={{fontFamily:"'Space Mono', monospace"}}>
+                <Link to="/"><img src="/src/assets/zoom-logo-white.svg" alt="" /></Link>
+            </div>
+            <div className="nav-end text-white flex justify-center items-center gap-5 w-[30%]" style={{fontFamily:"'Montserrat Variable', sans-serif"}}>
+                <Link  onClick={()=>setopen(!open)}>
+                    Meet
+                </Link>
+                {open && (
+                    <div className="w-40 h-30 bg-gray-200 absolute top-17 right-70 rounded-3xl flex  flex-col justify-center items-center gap-3">
+                        <Link to="/join" className="text-black">
+                            Join a meeting
+                        </Link>
+                        <Link to="/host" className="text-black">
+                            Host a meeting
+                        </Link>
+                    </div>
+                )}
+                <Link to="/signIn">
+                    Sign In
+                </Link>
+                <Link to="/support">
+                    Support
+                </Link>
+                <button className="w-30 bg-blue-600 p-2 rounded-2xl text-white">Sign Up Free</button>
+            </div>
+        </div>
+        </>
+    )
+}
