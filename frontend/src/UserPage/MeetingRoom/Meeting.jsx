@@ -67,30 +67,27 @@ useEffect(() => {
 }, [localStream]);
 
 
-const sharescreen = async () => {
-  try {
-    if (!videoSenderRef.current) return;
+const sharescreen = async()=>{
+  try{
+    const screenStream  = await navigator.mediaDevices.getDisplayMedia({
+       video:true,
+      audio:false,
+    })
 
-    const screenStream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: false,
-    });
-
-    screenStreamRef.current = screenStream;
+    screenStreamRef.current =  screenStream
     const screenTrack = screenStream.getVideoTracks()[0];
 
+      // im replacing the  video track
     await videoSenderRef.current.replaceTrack(screenTrack);
 
-    if (localVideoRef.current) {
+    if(localVideoRef.current){
       localVideoRef.current.srcObject = screenStream;
     }
-
+    // when user stops sharing
     screenTrack.onended = stopScreenShare;
-  } catch (err) {
-    console.log("Screen share failed", err);
-  }
-};
-
+  }catch(err){
+      console.log("Screen share failed",err);   
+  }}
   const stopScreenShare =async()=>{
     const cameraTrack = localStreamRef.current.getVideoTracks()[0]
     await videoSenderRef.current.replaceTrack(cameraTrack);
