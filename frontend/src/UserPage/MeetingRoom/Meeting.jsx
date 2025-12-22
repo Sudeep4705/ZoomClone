@@ -204,7 +204,7 @@ const sharescreen = async()=>{
 
         {/* CONTROLS */}
         <div className="flex gap-4 mt-6">
-          <button onClick={toggleMute} className="px-4 py-2 bg-white rounded">
+          <button onClick={toggleMute} className="px-4 py-2 bg-white rounded hover:cursor">
             {isMuted ? "Unmute" : "Mute"}
           </button>
           <button onClick={toggleCamera} className="px-4 py-2 bg-white rounded">
