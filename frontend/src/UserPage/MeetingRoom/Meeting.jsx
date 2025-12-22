@@ -31,7 +31,7 @@ export default function Meeting() {
 
   // ---------- START ----------
   useEffect(() => {
-    socketRef.current = io("http://localhost:8001");
+    socketRef.current = io("https://zoomclone-v1fi.onrender.com");
     startMeeting();
     socketRef.current.on("user-joined", async () => {
       await createOffer();
@@ -83,19 +83,14 @@ const sharescreen = async()=>{
     if(localVideoRef.current){
       localVideoRef.current.srcObject = screenStream;
     }
-
     // when user stops sharing
     screenTrack.onended = stopScreenShare;
-
   }catch(err){
       console.log("Screen share failed",err);   
   }}
-
   const stopScreenShare =async()=>{
     const cameraTrack = localStreamRef.current.getVideoTracks()[0]
-
     await videoSenderRef.current.replaceTrack(cameraTrack);
-
     if(localVideoRef.current){
         localVideoRef.current.srcObject = localStreamRef.current;
     }
@@ -106,20 +101,13 @@ const sharescreen = async()=>{
 
   }
 
-
   // toggleCamera
-
   const toggleCamera = ()=>{
     const videoTrack = localStreamRef.current.getVideoTracks()[0];
     if(!videoTrack) return;
     videoTrack.enabled=!videoTrack.enabled;
       settogglecamera(!videoTrack.enabled)
   };
-
-
-
-
-
 
   // ---------- GET CAMERA & JOIN ROOM ----------
   async function startMeeting() {

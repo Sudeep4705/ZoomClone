@@ -6,7 +6,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://zoom-clo-ne.netlify.app",
     credentials: true,
   },
 });
@@ -36,7 +36,6 @@ io.on("connection", (socket) => {
     console.log("User disconnected:", socket.id);
   });
 });
-
 server.listen(8001, () => {
   console.log("LISTENING ON SERVER PORT 8001");
 });

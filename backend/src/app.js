@@ -21,7 +21,7 @@ console.log(err);
 
 })
 
-app.use(Cors({origin:" http://localhost:5173",credentials:true}))
+app.use(Cors({origin:["http://localhost:5173","https://zoom-clo-ne.netlify.app"],credentials:true}))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())

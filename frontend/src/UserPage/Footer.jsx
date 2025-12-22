@@ -33,7 +33,7 @@ export default function Footer() {
           <h2 className="text-gray-300">Talk to a sales rep</h2>
           <p className="text-white text-xl font-bold mb-6">
             1.888.799.9666
-          </p>  
+          </p>   
 
           <div className="text-white flex gap-4 mb-4">
             <FacebookIcon fontSize="large" />
