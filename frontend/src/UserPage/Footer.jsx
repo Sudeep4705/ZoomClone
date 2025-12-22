@@ -13,7 +13,7 @@ export default function Footer() {
         {/* COLUMN 1 */}
         <div>
           <img
-            src="/src/assets/zoom-logo-white.svg"
+            src="src/assets/zoom-logo-white.svg"
             alt="logo"
             className="w-32 mb-6"
           />
