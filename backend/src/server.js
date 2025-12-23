@@ -6,7 +6,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://zoom-clo-ne.netlify.app",
+    origin: ["https://zoom-clo-ne.netlify.app"," http://localhost:5173"],
     credentials: true,
   },
 });
