@@ -1,139 +1,117 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { io } from "socket.io-client";
+import { io } from "socket.io-client"; // Correct import
 
 export default function Meeting() {
   const { meetingId } = useParams();
 
   // ---------- STATE ----------
   const [isMuted, setIsMuted] = useState(false);
-  const [isTwoCameraS, setisTwoCameras] = useState(false);
-  const [remoteStream,setremoteStream] = useState(null)
+  const [isCameraOff, setIsCameraOff] = useState(false); // Renamed for clarity
+  const [isScreenSharing, setIsScreenSharing] = useState(false); // New state for layout
+  const [isTwoCameras, setIsTwoCameras] = useState(false); // Fixed typo setisTwoCameras
+  
+  const [remoteStream, setRemoteStream] = useState(null);
   const [localStream, setLocalStream] = useState(null);
-  const [togglecamera,settogglecamera] = useState(false)
 
-
-  // ---------- REFS ----------sss
+  // ---------- REFS ----------
   const socketRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const screenStreamRef = useRef(null);
-  const videoSenderRef = useRef(null);
-
-  
+  const videoSenderRef = useRef(null); // CRITICAL REF
 
   // ---------- RTC CONFIG ----------
   const rtcConfig = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
   };
 
-  // ---------- START ----------
+  // ---------- SOCKET & INITIALIZATION ----------
   useEffect(() => {
-    socketRef.current = io("https://zoomclone-v1fi.onrender.com");
+    // Ensure this matches your backend URL
+    socketRef.current = io("http://localhost:8001/");
+    
     startMeeting();
+
     socketRef.current.on("user-joined", async () => {
+      console.log("User joined, creating offer...");
       await createOffer();
     });
+
     socketRef.current.on("offer", async (offer) => {
       await createAnswer(offer);
     });
+
     socketRef.current.on("answer", async (answer) => {
       await peerConnectionRef.current.setRemoteDescription(answer);
     });
+
     socketRef.current.on("ice-candidate", async (candidate) => {
-      if(candidate) {
+      if (candidate) {
         await peerConnectionRef.current.addIceCandidate(candidate);
       }
     });
+
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
 
-  // useffect for remotevideo
+  // Sync Remote Stream to Video Element
   useEffect(() => {
-  if (remoteVideoRef.current && remoteStream) {
-    remoteVideoRef.current.srcObject = remoteStream;
-  }
-}, [remoteStream]);
-
-//useffect for localvideo
-useEffect(() => {
-  if (localVideoRef.current && localStream) {
-    localVideoRef.current.srcObject = localStream;
-  }
-}, [localStream]);
-
-
-const sharescreen = async()=>{
-  try{
-    const screenStream  = await navigator.mediaDevices.getDisplayMedia({
-       video:true,
-      audio:false,
-    })
-    screenStreamRef.current =  screenStream
-    const screenTrack = screenStream.getVideoTracks()[0];
-    console.log(screenTrack);
-    
-      // im replacing the  video track
-    await videoSenderRef.current.replaceTrack(screenTrack);
-    if(localVideoRef.current){
-      localVideoRef.current.srcObject = screenStream;
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream;
     }
-    // when user stops sharing
-    screenTrack.onended = stopScreenShare;
-  }catch(err){
-      console.log("Screen share failed",err);   
-  }}
-  const stopScreenShare =async()=>{
-    const cameraTrack = localStreamRef.current.getVideoTracks()[0]
-    await videoSenderRef.current.replaceTrack(cameraTrack);
-    if(localVideoRef.current){
-        localVideoRef.current.srcObject = localStreamRef.current;
+  }, [remoteStream]);
+
+  // Sync Local Stream to Video Element
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
     }
-  // cleanup
-  screenStreamRef.current?.getTracks().forEach(t=>t.stop());
-  screenStreamRef.current = null
-  }
+  }, [localStream]);
 
-  // toggleCamera
-  const toggleCamera = ()=>{
-    const videoTrack = localStreamRef.current.getVideoTracks()[0];
-    if(!videoTrack) return;
-    videoTrack.enabled=!videoTrack.enabled;
-      settogglecamera(!videoTrack.enabled)
-  };
 
-  // ---------- GET CAMERA & JOIN ROOM ----------
+  // ---------- CORE WEBRTC FUNCTIONS ----------
+
   async function startMeeting() {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-    localStreamRef.current = stream;
-    setLocalStream(stream);
-    socketRef.current.emit("join-room", meetingId);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localStreamRef.current = stream;
+      setLocalStream(stream);
+      socketRef.current.emit("join-room", meetingId);
+    } catch (err) {
+      console.error("Error accessing media devices:", err);
+    }
   }
 
-  // ---------- CREATE PEER CONNECTION ----------
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection(rtcConfig);
     peerConnectionRef.current = pc;
 
-    // add local tracks  
+    // --- CRITICAL FIX START ---
+    // Add local tracks and SAVE THE VIDEO SENDER so we can replace it later
     localStreamRef.current.getTracks().forEach((track) => {
-      pc.addTrack(track, localStreamRef.current);
+      const sender = pc.addTrack(track, localStreamRef.current);
+      if (track.kind === 'video') {
+        videoSenderRef.current = sender; 
+      }
     });
+    // --- CRITICAL FIX END ---
 
-    // receive remote tracks
-    pc.ontrack = (event) => {    
-      setremoteStream(event.streams[0])
-      setisTwoCameras(true)
-      }   
-    
-    // send ICE candidates
+    // Handle incoming tracks
+    pc.ontrack = (event) => {
+      console.log("Track received:", event.streams[0]);
+      setRemoteStream(event.streams[0]);
+      setIsTwoCameras(true);
+    };
+
+    // Handle ICE candidates
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         socketRef.current.emit("ice-candidate", {
@@ -143,7 +121,7 @@ const sharescreen = async()=>{
       }
     };
   };
-  // ---------- OFFER ----------
+
   const createOffer = async () => {
     createPeerConnection();
     const offer = await peerConnectionRef.current.createOffer();
@@ -151,7 +129,6 @@ const sharescreen = async()=>{
     socketRef.current.emit("offer", { offer, roomId: meetingId });
   };
 
-  // ---------- ANSWER ----------
   const createAnswer = async (offer) => {
     createPeerConnection();
     await peerConnectionRef.current.setRemoteDescription(offer);
@@ -160,56 +137,158 @@ const sharescreen = async()=>{
     socketRef.current.emit("answer", { answer, roomId: meetingId });
   };
 
-  // ---------- MUTE / UNMUTE ----------
+
+  // ---------- FEATURES (SCREEN SHARE, MUTE, CAMERA) ----------
+
+  const sharescreen = async () => {
+    try {
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: true, // You can add cursor: "always" here if you want
+      });
+      screenStreamRef.current = screenStream;
+      const screenTrack = screenStream.getVideoTracks()[0];
+
+      // Replace the track sent to the peer
+      if (videoSenderRef.current) {
+        await videoSenderRef.current.replaceTrack(screenTrack);
+      }
+
+      // Update local view and State
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = screenStream;
+      }
+      setIsScreenSharing(true);
+
+      // Handle "Stop Sharing" from browser UI
+      screenTrack.onended = () => {
+        stopScreenShare();
+      };
+
+    } catch (err) {
+      console.log("Screen share failed", err);
+    }
+  };
+
+  const stopScreenShare = async () => {
+    try {
+      // Switch back to camera track
+      const cameraTrack = localStreamRef.current.getVideoTracks()[0];
+      
+      if (videoSenderRef.current) {
+        await videoSenderRef.current.replaceTrack(cameraTrack);
+      }
+
+      // Update local view
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current;
+      }
+
+      // Stop the screen share stream tracks
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach((t) => t.stop());
+        screenStreamRef.current = null;
+      }
+
+      setIsScreenSharing(false);
+    } catch (err) {
+      console.error("Error stopping screen share:", err);
+    }
+  };
+
   const toggleMute = () => {
     const audioTrack = localStreamRef.current
-      .getTracks()
+      ?.getTracks()
       .find((track) => track.kind === "audio");
     if (!audioTrack) return;
     audioTrack.enabled = !audioTrack.enabled;
     setIsMuted(!audioTrack.enabled);
   };
 
-  // ---------- UI ----------
-  return (
-    <div className="h-screen bg-gradient-to-b from-[#06134b] via-[#153d8a] to-[#7f78d2] flex flex-col items-center justify-center gap-6">
-      <h2 className="text-white text-xl">Meeting ID: {meetingId}</h2>
-      <>
-   <div className="flex justify-center items-center gap-6">
-  {/* LOCAL VIDEO — MIRRORED */}
-  <video
-    ref={localVideoRef}
-    autoPlay
-    muted
-    playsInline
-    className={`${
-      isTwoCameraS ? "w-80" : "w-96"
-    } rounded-lg scale-x-[-1]`}
-  />
+  const toggleCamera = () => {
+    const videoTrack = localStreamRef.current
+      ?.getVideoTracks()[0];
+    if (!videoTrack) return;
+    videoTrack.enabled = !videoTrack.enabled;
+    setIsCameraOff(!videoTrack.enabled);
+  };
 
-  {/* REMOTE VIDEO — ALSO MIRRORED */}
-  {isTwoCameraS && (
-    <video
-      ref={remoteVideoRef}
-      autoPlay
-      playsInline
-      className="w-80 rounded-lg scale-x-[-1]"
-    />
-  )}
-</div>
-      {/* CONTROLS */}
-        <div className="flex gap-4 mt-6">
-          <button onClick={toggleMute} className="px-4 py-2 bg-white rounded cursor-pointer">
-            {isMuted ? "Unmute" : "Mute"}
-          </button>
-          <button onClick={toggleCamera} className="px-4 py-2 bg-white rounded cursor-pointer">
-            {togglecamera ? "Turn On": "Turn off"}
-          </button>
-          <button onClick={sharescreen} className="px-4 py-2 bg-white rounded cursor-pointer">
-            Share screen
-          </button>
-        </div>
-      </>
+
+  // ---------- UI RENDER ----------
+// ---------- UI RENDER ----------
+  return (
+    <div className="flex flex-col h-screen w-screen bg-gray-900 overflow-hidden">
+      
+      {/* 1. HEADER */}
+      <div className="h-16 flex items-center justify-center bg-gray-800 shrink-0 z-50 shadow-md">
+        <h2 className="text-white font-bold">Meeting ID: {meetingId}</h2>
+      </div>
+
+      {/* 2. THE VIDEO STAGE - BRUTE FORCED SIZE */}
+      {/* We use flex-grow to take all remaining space, and relative to act as an anchor */}
+      <div className="flex-grow relative bg-black w-full overflow-hidden">
+        
+        {/* LOCAL VIDEO (Your Stream) */}
+        <video
+          ref={localVideoRef}
+          autoPlay
+          muted
+          playsInline
+          // INLINE STYLES ARE KEY HERE. 
+          // We force width/height to 100% of the parent container explicitly.
+          style={{ 
+            width: "100%", 
+            height: "100%", 
+            objectFit: isScreenSharing ? "contain" : "cover",
+            transform: isScreenSharing ? "scaleX(1)" : "scaleX(-1)"
+          }}
+        />
+
+        {/* REMOTE VIDEO (Peer Stream) - Picture in Picture */}
+        {isTwoCameras && (
+          <div style={{
+            position: "absolute",
+            bottom: "20px",
+            right: "20px",
+            width: "250px",
+            height: "150px",
+            zIndex: 20,
+            borderRadius: "10px",
+            overflow: "hidden",
+            border: "2px solid white",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+          }}>
+            <video
+              ref={remoteVideoRef}
+              autoPlay
+              playsInline
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover"
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* 3. CONTROLS (Footer) */}
+      <div className="h-20 bg-gray-800 shrink-0 flex justify-center items-center gap-4 z-50">
+        <button onClick={toggleMute} className="px-6 py-2 bg-white rounded font-bold">
+          {isMuted ? "Unmute" : "Mute"}
+        </button>
+        <button onClick={toggleCamera} className="px-6 py-2 bg-white rounded font-bold">
+          {isCameraOff ? "Turn On" : "Turn Off"}
+        </button>
+        <button 
+          onClick={isScreenSharing ? stopScreenShare : sharescreen} 
+          className={`px-6 py-2 rounded font-bold text-white ${
+            isScreenSharing ? "bg-red-500" : "bg-blue-600"
+          }`}
+        >
+          {isScreenSharing ? "Stop Sharing" : "Share Screen"}
+        </button>
+      </div>
+
     </div>
   );
 }

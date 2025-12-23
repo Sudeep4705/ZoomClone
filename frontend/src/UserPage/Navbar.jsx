@@ -1,13 +1,18 @@
-import { Link, Links } from "react-router-dom";
+import { Link, Links, useNavigate } from "react-router-dom";
 import '@fontsource/space-mono';
 import '@fontsource-variable/montserrat';
 import { useState } from "react";
 export default function Navbar(){
     const [open,setopen] =  useState(false)
+    
+    const navigate  =  useNavigate()
+    const handleclick = ()=>{
+        navigate("/signup")
+    }
     return(
         <>
         <div className="navbar w-full h-20 bg-transparent shadow-none fixed inset-0 flex justify-between items-center z-56 ">
-            <div className="nav-start text-white text-4xl w-[70%] ml-6 font-bold" style={{fontFamily:"'Space Mono', monospace"}}>
+            <div className="nav-start text-white text-4xl  ml-6 font-bold" style={{fontFamily:"'Space Mono', monospace"}}>
                 <Link to="/"><img src="/src/assets/zoom-logo-white.svg" alt="" /></Link>
             </div>
             <div className="nav-end text-white flex justify-center items-center gap-5 w-[30%]" style={{fontFamily:"'Montserrat Variable', sans-serif"}}>
@@ -30,7 +35,7 @@ export default function Navbar(){
                 <Link to="/support">
                     Support
                 </Link>
-                <button className="w-30 bg-blue-600 p-2 rounded-2xl text-white">Sign Up Free</button>
+                <button className="w-30 bg-blue-600 p-2 rounded-2xl text-white" onClick={handleclick}>Sign Up Free</button>
             </div>
         </div>
         </>
