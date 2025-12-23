@@ -75,6 +75,8 @@ const sharescreen = async()=>{
     })
     screenStreamRef.current =  screenStream
     const screenTrack = screenStream.getVideoTracks()[0];
+    console.log(screenTrack);
+    
       // im replacing the  video track
     await videoSenderRef.current.replaceTrack(screenTrack);
     if(localVideoRef.current){
