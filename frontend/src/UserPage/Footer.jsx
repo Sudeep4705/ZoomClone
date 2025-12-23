@@ -9,7 +9,6 @@ export default function Footer() {
   return (
     <div className="footer bg-linear-to-b from-[#070F3A] via-[#050A29] to-black py-16 px-10">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
-
         {/* COLUMN 1 */}
         <div>
           <img
@@ -17,7 +16,6 @@ export default function Footer() {
             alt="logo"
             className="w-32 mb-6"
           />
-
           <div className="flex gap-3 items-center mb-10">
             <div className="w-12 h-12 bg-white rounded-md text-blue-500 flex items-center justify-center">
               <SaveAltIcon />
