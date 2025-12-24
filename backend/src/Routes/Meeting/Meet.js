@@ -1,9 +1,9 @@
 const express =  require("express")
 const router = express.Router()
 const Host  = require("../../Model/Meeting/Host")
+const Authenticate = require("../../Middleware/Authenticate")
 
-
-router.post("/host",async(req,res)=>{
+router.post("/host",Authenticate,async(req,res)=>{
     let  {hostname,meetingid} = req.body
     if(!hostname || !meetingid){
         return res.json({message:"No id or hostName found"})
@@ -16,7 +16,8 @@ router.post("/host",async(req,res)=>{
     }
 return res.json({ "success": true,
   "message": "Meeting created",
-  "meetingId":meetingid})
+  "meetingId":meetingid,
+})
 })
 
 

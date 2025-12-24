@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 export default function Host() {
   const navigate = useNavigate()
         const [data,setdata] =  useState({
             hostname:"",
         })
+      const [auth,setauth] = useState(true)
       const [meetingId, setMeetingId] = useState("");
      
     useEffect(()=>{
@@ -16,7 +18,7 @@ export default function Host() {
         setdata({...data,[e.target.name]:e.target.value})
     }
     const handlesubmit = async(e)=>{
-       await axios.post(
+      let res  = await axios.post(
   "http://localhost:8001/meet/host",
   {
     hostname: data.hostname,
@@ -24,7 +26,15 @@ export default function Host() {
   },
   { withCredentials: true }
 );
-navigate(`/meeting/${meetingId}/${data.hostname}`);
+setauth(res.data.auth)
+console.log(auth);
+
+if(!auth){
+  toast.success(res.data.message)
+}else{
+   navigate(`/meeting/${meetingId}/${data.hostname}`);
+}
+
 }
   return(
     <>
