@@ -1,11 +1,13 @@
-import logo from "../assets/aic-logo.svg";
+import camp from "../../assets/aic-logo.svg";
+
+
 
 export default function Companion() {
   return (
     <div className="w-full pt-20 pb-40 bg-linear-to-b from-[#070F3A] via-[#050A29] to-black mt-20">
       {/* Logo */}
       <div className="flex justify-center mb-10">
-        <img src={logo} alt="logo" className="h-10" />
+        <img src={camp} alt="logo" className="h-10" />
       </div>
       {/* Heading */}
       <div className="text-center">
