@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import {toast} from "react-toastify";
+import logo from "../assets/zoom-logo-white.svg";
 export default function Navbar(){
     const [open,setopen] =  useState(false)
     const [isloggedIn,setisloggedIn] = useState(false) 
@@ -28,7 +29,7 @@ export default function Navbar(){
         <>
         <div className="navbar w-full h-20 bg-transparent shadow-none fixed inset-0 flex justify-between items-center z-56 ">
             <div className="nav-start text-white text-4xl  ml-6 font-bold" style={{fontFamily:"'Space Mono', monospace"}}>
-                <Link to="/"><img src="/src/assets/zoom-logo-white.svg" alt="" /></Link>
+                <Link to="/"><img src={logo} alt="" /></Link>
             </div>
             <div className="nav-end text-white flex justify-center items-center gap-5 w-[30%]" style={{fontFamily:"'Montserrat Variable', sans-serif"}}>
                 <Link  onClick={()=>setopen(!open)}>
