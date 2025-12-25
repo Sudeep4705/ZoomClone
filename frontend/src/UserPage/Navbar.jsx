@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import {toast} from "react-toastify";
-import logo from "../../assets/zoom-logo-white.svg";
+import logo from "../assets/zoom-logo-white.svg";
 export default function Navbar(){
     const [open,setopen] =  useState(false)
     const [isloggedIn,setisloggedIn] = useState(false) 
