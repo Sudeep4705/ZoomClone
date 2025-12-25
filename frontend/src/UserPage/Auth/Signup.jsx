@@ -15,7 +15,7 @@ export default function Signup() {
   const handlesubmit = async (e) => {
     e.preventDefault();
     try {
-      let res = await axios.post("http://localhost:8001/user/signup", data, {
+      let res = await axios.post("https://zoomclone-v1fi.onrender.com/user/signup", data, {
         withCredentials: true,
       });
         toast.success(res.data.message); 

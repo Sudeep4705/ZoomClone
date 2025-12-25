@@ -7,7 +7,6 @@ import Meeting from "./UserPage/MeetingRoom/Meeting"
 import Signup from "./UserPage/Auth/Signup"
 import { ToastContainer } from 'react-toastify';
 import Login from "./UserPage/Auth/Login"
-
 function App() {
   return (
     <>
@@ -18,9 +17,9 @@ function App() {
       <Route index element={<HomePage/>}/>
       <Route path="join" element={<Join/>}/>
       <Route path="host" element={<Host/>}/>
-      <Route path="meeting/:meetingId/:hostname" element={<Meeting />} />
+      <Route path="meeting/:meetingId/:hostname" element={<Meeting/>}/>
       <Route path="signup" element={<Signup/>}/>
-      <Route path="login" element={<Login/>}/>
+      <Route path="login"  element={<Login/>}/>
       </Route>
      </Routes>
      </BrowserRouter>

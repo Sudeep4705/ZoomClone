@@ -31,7 +31,7 @@ export default function Meeting() {
   // ---------- SOCKET & INITIALIZATION ----------
   useEffect(() => {
     // Ensure this matches your backend URL
-    socketRef.current = io("http://localhost:8001/");
+    socketRef.current = io("https://zoomclone-v1fi.onrender.com");
     
     startMeeting();
 

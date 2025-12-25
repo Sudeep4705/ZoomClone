@@ -4,25 +4,23 @@ import '@fontsource-variable/montserrat';
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 export default function Navbar(){
     const [open,setopen] =  useState(false)
-    const [isloggedIn,setisloggedIn] = useState(false)
-    
+    const [isloggedIn,setisloggedIn] = useState(false) 
     const navigate  =  useNavigate()
     const handleclick = ()=>{
         navigate("/signup")
     }
     useEffect(()=>{
         const verify=async()=>{
-            let res  =  await axios.get("http://localhost:8001/user/verify",{withCredentials:true})
+            let res  =  await axios.get("https://zoomclone-v1fi.onrender.com/user/verify",{withCredentials:true})
             setisloggedIn(res.data.isloggedIn)
         }
         verify()
     },[])
-
     const handlelogout=async()=>{
-        let res = await axios.post("http://localhost:8001/user/logout",{},{withCredentials:true})
+        let res = await axios.post("https://zoomclone-v1fi.onrender.com/user/logout",{},{withCredentials:true})
         setisloggedIn(res.data.isloggedIn)
         toast.success(res.data.message)
     }
@@ -58,7 +56,6 @@ export default function Navbar(){
                          <button className="w-30 bg-blue-600 p-2 rounded-2xl text-white" onClick={handlelogout}>Logout</button>
                     )
                 }
-               
                 <Link to="/support">
                     Support
                 </Link>
@@ -66,8 +63,7 @@ export default function Navbar(){
                     !isloggedIn && (
                             <button className="w-30 bg-blue-600 p-2 rounded-2xl text-white" onClick={handleclick}>Sign Up Free</button>
                     )
-                }
-                
+                } 
             </div>
         </div>
         </>

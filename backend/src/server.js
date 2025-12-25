@@ -1,37 +1,34 @@
 const app = require("./app");
 const http = require("http");
 const { Server } = require("socket.io");
+const Authenticate = require("./Middleware/Authenticate");
+
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: " http://localhost:5173",
+    origin: "https://zoom-clo-ne.netlify.app",
     credentials: true,
   },
 });
 
-io.on("connection", (socket) => {
+io.on("connection",(socket) => {
   console.log("client connected", socket.id);
-
-  socket.on("join-room", (meetingId) => {
+  socket.on("join-room",(meetingId) => {
     socket.join(meetingId);
     console.log(`User joined meeting: ${meetingId}`);
     socket.to(meetingId).emit("user-joined");
   });
-
   socket.on("offer", ({ offer, roomId }) => {
     socket.to(roomId).emit("offer", offer);
   });
-
   socket.on("answer", ({ answer, roomId }) => {
     socket.to(roomId).emit("answer", answer);
   });
-
   socket.on("ice-candidate", ({ candidate, roomId }) => {
     socket.to(roomId).emit("ice-candidate", candidate);
   });
-
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });

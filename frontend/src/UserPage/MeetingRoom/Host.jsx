@@ -19,7 +19,7 @@ export default function Host() {
     }
     const handlesubmit = async(e)=>{
       let res  = await axios.post(
-  "http://localhost:8001/meet/host",
+  "https://zoomclone-v1fi.onrender.com/meet/host",
   {
     hostname: data.hostname,
     meetingid: meetingId,
@@ -34,7 +34,6 @@ if(!auth){
 }else{
    navigate(`/meeting/${meetingId}/${data.hostname}`);
 }
-
 }
   return(
     <>

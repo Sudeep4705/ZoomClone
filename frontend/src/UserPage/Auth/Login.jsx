@@ -13,7 +13,7 @@ export default function Login(){
     const handlesubmit=async(e)=>{
         e.preventDefault()
          try {
-      let res = await axios.post("http://localhost:8001/user/login", data, {
+      let res = await axios.post("https://zoomclone-v1fi.onrender.com/user/login", data, {
         withCredentials: true,
       });
         toast.success(res.data.message); 
