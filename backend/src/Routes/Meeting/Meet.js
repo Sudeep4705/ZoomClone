@@ -31,12 +31,17 @@ router.post("/support", wrapAsync(async(req, res, next) => {
     if (!email || !msg) {
         return res.json({ message: "Please fill the form" });
     }
-      await resend.emails.send({
-        from: email, 
-        to: process.env.GMAIL_USER,
-        subject: `Support Request`,
-        html: `<p>${msg}</p>`
-      })
+    await resend.emails.send({
+  from: "Support <onboarding@resend.dev>", 
+  to: process.env.GMAIL_USER,               
+  replyTo: email,                          
+  subject: "Support Request",
+  html: `
+    <p><strong>User Email:</strong> ${email}</p>
+    <p>${msg}</p>
+  `,
+});
+
 
       res.json({message:"Message Sent sucessfully"})
 }));
