@@ -33,7 +33,7 @@ router.post("/support",Authenticate, wrapAsync(async(req, res, next) => {
         return res.json({ message: "Please fill the form" });
     }
     const storeMail = new Support({
-      email,msg,owner:req.user._id
+      email,msg,owner:req.user.id
     })
     await storeMail.save()
 
