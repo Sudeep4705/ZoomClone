@@ -30,26 +30,26 @@ const transporter = nodemailer.createTransport({
     }      
 })
 
-router.post("/support",wrapAsync(async(req,res,next)=>{
-  let {email,msg} =req.body
-  if(!email || !msg){
-    return res.json({message:"Please fill the form"})
-  }else{ 
-  const mailoption = {
-    from:email,
-    to:process.env.GMAIL_USER,
-    subject:`Support Request`,
-    html:`
-    <p>${msg}</p>`
-  }
-  const message =await  transporter.sendMail(mailoption)
-  if(message){
-    return res.json({message:"Message send successfully"})
-  }else{
-    return res.json({message:"Server error"})
-  }
-  }
+router.post("/support", wrapAsync(async(req, res, next) => {
+    let { email, msg } = req.body;
+    
+    if (!email || !msg) {
+        return res.json({ message: "Please fill the form" });
+    }
 
-}))
+    const mailoption = {
+        from: email, 
+        to: process.env.GMAIL_USER,
+        subject: `Support Request`,
+        html: `<p>${msg}</p>`
+    };
+    try {
+        await transporter.sendMail(mailoption);
+        return res.json({ message: "Message send successfully" });
+    } catch (error) {  
+        console.log("Error details:", error); 
+        return res.json({ message: "Server error" });
+    }
+}));
 
 module.exports = router;
