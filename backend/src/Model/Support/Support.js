@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const { type } = require("node:os")
 const Schema  = mongoose.Schema
 
 const supportSchema = new Schema({
@@ -11,5 +10,16 @@ const supportSchema = new Schema({
             type:String,
             required:true
         },
-        
+        user:{
+            type:Schema.Types.ObjectId,
+            ref:User
+        },
+        sendAt:{
+            type:Date,
+            default:Date.now()
+        }
+
 })
+
+const Support = mongoose.model("Support",supportSchema)
+module.exports = Support

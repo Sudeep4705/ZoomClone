@@ -4,7 +4,8 @@ const Host = require("../../Model/Meeting/Host");
 const Authenticate = require("../../Middleware/Authenticate");
 const {Resend} =require("resend")
 const wrapAsync = require("../../WrapAsync")
-const resend = new Resend(process.env.RESEND_API_KEY)
+const Support = require("../../Model/Support/Support")
+
 
 router.post("/host", Authenticate,wrapAsync, (async (req, res,next) => {
   let { hostname, meetingid } = req.body;
@@ -24,13 +25,18 @@ router.post("/host", Authenticate,wrapAsync, (async (req, res,next) => {
   });
 }));
 
+const resend = new Resend(process.env.RESEND_API_KEY)
 
-
-router.post("/support", wrapAsync(async(req, res, next) => {
+router.post("/support",Authenticate, wrapAsync(async(req, res, next) => {
     let { email, msg } = req.body;
     if (!email || !msg) {
         return res.json({ message: "Please fill the form" });
     }
+    const storeMail = new Support({
+      email,msg,user:req.user._id
+    })
+    await storeMail.save()
+    
     await resend.emails.send({
   from: "Support <onboarding@resend.dev>", 
   to: process.env.GMAIL_USER,               
