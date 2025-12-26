@@ -35,16 +35,13 @@ router.post("/support",wrapAsync(async(req,res,next)=>{
   if(!email || !msg){
     return res.json({message:"Please fill the form"})
   }else{ 
-  const mailoption = {
-    from: `"Website Support" <${process.env.GMAIL_USER}>`,
-  to: process.env.GMAIL_USER,
-  replyTo: email,     
-  subject: "Support Request",
-  html: `
-    <p><strong>From:</strong> ${email}</p>
-    <p>${msg}</p>
-  `
-  }
+const mailoption = {
+    from: process.env.GMAIL_USER, // MUST be your own email
+    to: process.env.GMAIL_USER,
+    replyTo: email,               // The user's email goes here so you can reply to them
+    subject: `Support Request from ${email}`,
+    html: `<p>${msg}</p>`
+}
   const message =await  transporter.sendMail(mailoption)
   if(message){
     return res.json({message:"Message send successfully"})
