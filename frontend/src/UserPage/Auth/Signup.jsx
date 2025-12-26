@@ -8,7 +8,6 @@ export default function Signup() {
     email: "",
     password: "",
   });
- 
   const navigate  = useNavigate()
   const handlechange = (e) => {
     setdata({ ...data, [e.target.name]: e.target.value });
