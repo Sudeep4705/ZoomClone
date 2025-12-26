@@ -70,7 +70,7 @@ router.post("/login",async(req,res)=>{
       sameSite:process.env.NODE_ENV === "production" ? "none" :"strict",
       maxAge:5*60*60*1000
     })
-    return res.json({message:"Login successfully"})
+    return res.json({message:"Login successfully",success:true})
   }
 })
 

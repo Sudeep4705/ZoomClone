@@ -1,22 +1,28 @@
 import axios from "axios"
 import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom";
 import {toast } from 'react-toastify';
 export default function Login(){
     const [data,setdata] = useState({
         email:"",
         password:""
     })
+
+    const navigate = useNavigate()
     const handlechange = (e)=>{
         setdata({...data,[e.target.name]:e.target.value})
     }
-
     const handlesubmit=async(e)=>{
         e.preventDefault()
          try {
       let res = await axios.post("https://zoomclone-v1fi.onrender.com/user/login", data, {
         withCredentials: true,
       });
+
         toast.success(res.data.message); 
+        if(res.data.success){
+            navigate("/")
+        }  
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
     }
@@ -55,13 +61,16 @@ export default function Login(){
                       className="border border-b-current md:pl-2 w-sm h-10 rounded-sm  placeholder:pl-2"
                     />
                   </div>
-                  <div className="btn md:w-full h-full">
+                  <div className="btn md:w-full md:h-full md:flex md:flex-col">
                     <button
                       className="w-30 bg-blue-600 ml-10 pt-2 pb-2 rounded-md text-white"
                       type="submit"
                     >
                       Login
                     </button>
+                     <Link to="/signup" className="underline ml-10 mt-2">
+                    New here? Register here
+                    </Link>
                   </div>
                 </div>
               </form>

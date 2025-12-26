@@ -1,14 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
 import {toast } from 'react-toastify';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export default function Signup() {
   const [data, setdata] = useState({
     username: "",
     email: "",
     password: "",
   });
-
+ 
+  const navigate  = useNavigate()
   const handlechange = (e) => {
     setdata({ ...data, [e.target.name]: e.target.value });
   };
@@ -18,7 +19,12 @@ export default function Signup() {
       let res = await axios.post("https://zoomclone-v1fi.onrender.com/user/signup", data, {
         withCredentials: true,
       });
-        toast.success(res.data.message); 
+        setsuccess(res.data.success)
+        toast.success(res.data.message);
+        
+        if(res.data.success){
+             navigate("/")
+        }
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
     }
