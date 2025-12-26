@@ -20,6 +20,7 @@ router.post("/host", Authenticate, async (req, res) => {
     meetingId: meetingid,   
   });
 });
+
 const transporter = nodemailer.createTransport({
     service:"gmail",
     auth:{
