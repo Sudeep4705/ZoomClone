@@ -12,7 +12,7 @@ export default function Support(){
     }
     const handlesubmit = async(e)=>{
             let res =  axios.post("https://zoomclone-v1fi.onrender.com/meet/support",data,{withCredentials:true})
-            toast.success((await res).data.message)
+            toast.success(res.data.message)
     }
     return(
         <>
