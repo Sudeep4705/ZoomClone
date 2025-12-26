@@ -37,9 +37,9 @@ router.post("/support",async(req,res)=>{
   const mailoption = {
     from:email,
     to:process.env.GMAIL_USER,
-    subject:"New Issue from User",
+    subject:`New Issue from User`,
     html:`
-    <p>{message}</p>
+    <p>${msg}</p>
     `
   }
   const message =await  transporter.sendMail(mailoption)
