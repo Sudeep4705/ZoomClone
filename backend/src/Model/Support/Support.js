@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const Schema  = mongoose.Schema
-
+const User = require("../User/User")
 const supportSchema = new Schema({
         email:{
             type:String,
@@ -10,7 +10,7 @@ const supportSchema = new Schema({
             type:String,
             required:true
         },
-        user:{
+        owner:{
             type:Schema.Types.ObjectId,
             ref:User
         },

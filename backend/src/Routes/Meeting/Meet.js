@@ -33,10 +33,10 @@ router.post("/support",Authenticate, wrapAsync(async(req, res, next) => {
         return res.json({ message: "Please fill the form" });
     }
     const storeMail = new Support({
-      email,msg,user:req.user._id
+      email,msg,owner:req.user._id
     })
     await storeMail.save()
-    
+
     await resend.emails.send({
   from: "Support <onboarding@resend.dev>", 
   to: process.env.GMAIL_USER,               
