@@ -36,9 +36,9 @@ router.post("/support",wrapAsync(async(req,res,next)=>{
     return res.json({message:"Please fill the form"})
   }else{ 
 const mailoption = {
-    from: process.env.GMAIL_USER, // MUST be your own email
+    from: process.env.GMAIL_USER, 
     to: process.env.GMAIL_USER,
-    replyTo: email,               // The user's email goes here so you can reply to them
+    replyTo: email,               
     subject: `Support Request from ${email}`,
     html: `<p>${msg}</p>`
 }
