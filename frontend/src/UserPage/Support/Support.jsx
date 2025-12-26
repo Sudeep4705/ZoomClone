@@ -13,7 +13,9 @@ export default function Support(){
     const handlesubmit = async(e)=>{
         e.preventDefault()
             let res =  await axios.post("https://zoomclone-v1fi.onrender.com/meet/support",data,{withCredentials:true})
+            if(res.data.message){
             toast.success(res.data.message)
+            }
     }
     return(
         <>

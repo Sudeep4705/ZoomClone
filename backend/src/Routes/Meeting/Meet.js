@@ -33,8 +33,7 @@ router.post("/support",async(req,res)=>{
   let {email,msg} =req.body
   if(!email || !msg){
     return res.json({message:"Please fill the form"})
-  }
-
+  }else{ 
   const mailoption = {
     from:email,
     to:process.env.GMAIL_USER,
@@ -49,6 +48,8 @@ router.post("/support",async(req,res)=>{
   }else{
     return res.json({message:"Server error"})
   }
+  }
+
 })
 
 module.exports = router;
