@@ -19,9 +19,7 @@ export default function Signup() {
       let res = await axios.post("https://zoomclone-v1fi.onrender.com/user/signup", data, {
         withCredentials: true,
       });
-        setsuccess(res.data.success)
         toast.success(res.data.message);
-        
         if(res.data.success){
              navigate("/")
         }
