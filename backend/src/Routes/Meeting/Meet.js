@@ -3,7 +3,8 @@ const router = express.Router();
 const Host = require("../../Model/Meeting/Host");
 const Authenticate = require("../../Middleware/Authenticate");
 const nodemailer = require("nodemailer")
-router.post("/host", Authenticate, async (req, res) => {
+const wrapAsync = require("../../WrapAsync")
+router.post("/host", Authenticate,wrapAsync, (async (req, res,next) => {
   let { hostname, meetingid } = req.body;
   if (!hostname || !meetingid) {
     return res.json({ message: "No id or hostName found" });
@@ -19,7 +20,7 @@ router.post("/host", Authenticate, async (req, res) => {
     success: true,
     meetingId: meetingid,   
   });
-});
+}));
 
 const transporter = nodemailer.createTransport({
     service:"gmail",
@@ -29,7 +30,7 @@ const transporter = nodemailer.createTransport({
     }      
 })
 
-router.post("/support",async(req,res)=>{
+router.post("/support",wrapAsync(async(req,res,next)=>{
   let {email,msg} =req.body
   if(!email || !msg){
     return res.json({message:"Please fill the form"})
@@ -37,7 +38,7 @@ router.post("/support",async(req,res)=>{
   const mailoption = {
     from:email,
     to:process.env.GMAIL_USER,
-    subject:`New Issue from User`,
+    subject:`Support Request`,
     html:`
     <p>${msg}</p>
     `
@@ -50,6 +51,6 @@ router.post("/support",async(req,res)=>{
   }
   }
 
-})
+}))
 
 module.exports = router;

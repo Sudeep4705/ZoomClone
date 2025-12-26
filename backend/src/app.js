@@ -32,6 +32,10 @@ app.use("/user",userRoute)
 
 
 
-
+// error handling middleware
+app.use((err,req,res,next)=>{
+    let {message="Something wrong",status=500} = err
+    res.status(status).json(message)
+})
 
 module.exports = app
