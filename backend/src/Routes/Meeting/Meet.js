@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Host = require("../../Model/Meeting/Host");
 const Authenticate = require("../../Middleware/Authenticate");
-const nodemailer = require("nodemailer")
+const {Resend} =require("resend")
 const wrapAsync = require("../../WrapAsync")
+const resend = new Resend(process.env.RESEND_API_KEY)
+
 router.post("/host", Authenticate,wrapAsync, (async (req, res,next) => {
   let { hostname, meetingid } = req.body;
   if (!hostname || !meetingid) {
@@ -22,36 +24,21 @@ router.post("/host", Authenticate,wrapAsync, (async (req, res,next) => {
   });
 }));
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS
-    },
-    // ⬇️ ADD THIS LINE. It forces IPv4 and fixes the timeout.
-    family: 4 
-});
+
 
 router.post("/support", wrapAsync(async(req, res, next) => {
     let { email, msg } = req.body;
     if (!email || !msg) {
         return res.json({ message: "Please fill the form" });
     }
-    const mailoption = {
+      await resend.emails.send({
         from: email, 
         to: process.env.GMAIL_USER,
         subject: `Support Request`,
         html: `<p>${msg}</p>`
-    };
-    try {
-        await transporter.sendMail(mailoption);
-        return res.json({ message: "Message send successfully" });
-    } catch (error) {  
-        console.log("Error details:", error); 
-        return res.json({ message: "Server error" });
-    }
+      })
+
+      res.json({message:"Message Sent sucessfully"})
 }));
 
 module.exports = router;
