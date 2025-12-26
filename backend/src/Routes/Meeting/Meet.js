@@ -43,7 +43,7 @@ router.post("/support", wrapAsync(async(req, res, next) => {
 });
 
 
-      res.json({message:"Message Sent sucessfully"})
+      res.json({message:"Message Sent sucessfully",auth:true})
 }));
 
 module.exports = router;

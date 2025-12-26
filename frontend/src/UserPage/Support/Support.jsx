@@ -1,5 +1,6 @@
 import axios from "axios"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 import {toast } from 'react-toastify';
 
 export default function Support(){
@@ -7,6 +8,7 @@ export default function Support(){
         email:"",
         msg:""
     })
+    const navigate = useNavigate()
     const handlechange=(e)=>{
         setdata({...data,[e.target.name]:e.target.value})
     }
@@ -15,6 +17,9 @@ export default function Support(){
             let res =  await axios.post("https://zoomclone-v1fi.onrender.com/meet/support",data,{withCredentials:true})
             if(res.data.message){
             toast.success(res.data.message)
+            }
+            if(res.data.auth){
+                navigate("/")
             }
     }
     return(
