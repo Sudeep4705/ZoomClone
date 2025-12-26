@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useState } from "react"
-
+import {toast } from 'react-toastify';
 
 export default function Support(){
     const [data,setdata] = useState({
@@ -11,7 +11,8 @@ export default function Support(){
         setdata({...data,[e.target.name]:e.target.value})
     }
     const handlesubmit = async(e)=>{
-            let res =  axios.post("https://zoomclone-v1fi.onrender.com/meet/support")
+            let res =  axios.post("https://zoomclone-v1fi.onrender.com/meet/support",data,{withCredentials:true})
+            toast.success((await res).data.message)
     }
     return(
         <>
@@ -20,15 +21,18 @@ export default function Support(){
                     <div className="support-form md:w-xl md:h-[400px] bg-white md:flex md:flex-col ">
                         <h1 className="text-black text-2xl pl-6 pt-2">Contact Us</h1>
                         <span className="border-2 border-blue-500 w-10 ml-6"></span>
-                        <div className="form-field">
-                             <input type="email" placeholder="enter the email"  className="border border-black p-3 w-sm ml-6 mt-10 rounded"/>
+                        <form onSubmit={handlesubmit}>
+                            <div className="form-field">
+                             <input type="email" placeholder="enter the email" name="email" onChange={handlechange} value={data.email} className="border border-black p-3 w-sm ml-6 mt-10 rounded"/>
                         </div>
                         <div className="form-field">
-                            <textarea name="msg" id="msg" className="border border-black p-5 ml-6 mt-10 w-sm rounded" placeholder="enter the message...."></textarea>
+                            <textarea name="msg" id="msg" className="border border-black p-5 ml-6 mt-10 w-sm rounded" value={data.msg} onChange={handlechange} placeholder="enter the message...."></textarea>
                         </div>
                        <div className="btn">
-                            <button className="w-30 ml-6 mt-10 rounded-md bg-blue-500 p-2 text-white">Send Message</button>
+                            <button className="w-30 ml-6 mt-10 rounded-md bg-blue-500 p-2 text-white" type="submit">Send Message</button>
                        </div>
+                        </form>
+                        
                     </div> 
                 </div>   
         </div>
