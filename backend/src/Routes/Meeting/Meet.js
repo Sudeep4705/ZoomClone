@@ -23,12 +23,14 @@ router.post("/host", Authenticate,wrapAsync, (async (req, res,next) => {
 }));
 
 const transporter = nodemailer.createTransport({
-    service:"gmail",
-    auth:{
-      pass:process.env.GMAIL_PASS,
-      user:process.env.GMAIL_USER
-    }      
-})
+    host: "smtp.gmail.com",  // We specify the host manually
+    port: 465,               // We force Port 465 (SSL)
+    secure: true,            // TRUE for port 465
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS
+    }
+});
 
 router.post("/support", wrapAsync(async(req, res, next) => {
   let { email, msg } = req.body;
