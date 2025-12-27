@@ -67,11 +67,12 @@ export default function Meeting() {
   }, [remoteStream]);
 
   // Sync Local Stream to Video Element
-  useEffect(() => {
+useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
     }
-  }, [localStream]);
+    // ADD 'isTwoCameras' here so it updates when the UI layout changes
+  }, [localStream, isTwoCameras]);
 
 
   // ---------- CORE WEBRTC FUNCTIONS ----------
@@ -228,21 +229,21 @@ export default function Meeting() {
       <div className="flex-grow relative bg-black w-full overflow-hidden">
         
         {/* LOCAL VIDEO (Your Stream) */}
-       <video
-          ref={remoteVideoRef} 
+   <video
+          ref={remoteVideoRef} // CHANGED: This is now the Remote Ref
           autoPlay
           playsInline
+          // IMPORTANT: Removed 'muted' so you can hear the other person!
           style={{ 
             width: "100%", 
             height: "100%", 
             objectFit: isScreenSharing ? "contain" : "cover",
-            transform: "scaleX(1)" 
+            transform: "scaleX(1)" // CHANGED: Don't mirror the other person
           }}
         />
 
         {/* REMOTE VIDEO (Peer Stream) - Picture in Picture */}
-        {isTwoCameras && (
-          <div style={{
+     <div style={{
             position: "absolute",
             bottom: "20px",
             right: "20px",
@@ -257,18 +258,18 @@ export default function Meeting() {
             <video
                 ref={localVideoRef} // CHANGED: This is now the Local Ref
                 autoPlay
-                muted 
+                muted // IMPORTANT: Always mute your local video to avoid feedback loops!
                 playsInline
                 style={{
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    transform: "scaleX(-1)" 
+                    transform: "scaleX(-1)" // CHANGED: Mirror your own face
                 }}
             />
         </div>
-        )}
       </div>
+
       {/* 3. CONTROLS (Footer) */}
       <div className="h-20 bg-gray-800 shrink-0 flex justify-center items-center gap-4 z-50">
         <button onClick={toggleMute} className="px-6 py-2 bg-white rounded font-bold">
