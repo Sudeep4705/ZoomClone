@@ -228,18 +228,15 @@ export default function Meeting() {
       <div className="flex-grow relative bg-black w-full overflow-hidden">
         
         {/* LOCAL VIDEO (Your Stream) */}
-        <video
-          ref={localVideoRef}
+       <video
+          ref={remoteVideoRef} 
           autoPlay
-          muted
           playsInline
-          // INLINE STYLES ARE KEY HERE. 
-          // We force width/height to 100% of the parent container explicitly.
           style={{ 
             width: "100%", 
             height: "100%", 
             objectFit: isScreenSharing ? "contain" : "cover",
-            transform: isScreenSharing ? "scaleX(1)" : "scaleX(-1)"
+            transform: "scaleX(1)" 
           }}
         />
 
@@ -256,21 +253,22 @@ export default function Meeting() {
             overflow: "hidden",
             border: "2px solid white",
             boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
-          }}>
+        }}>
             <video
-              ref={remoteVideoRef}
-              autoPlay
-              playsInline
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover"
-              }}
+                ref={localVideoRef} // CHANGED: This is now the Local Ref
+                autoPlay
+                muted 
+                playsInline
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transform: "scaleX(-1)" 
+                }}
             />
-          </div>
+        </div>
         )}
       </div>
-
       {/* 3. CONTROLS (Footer) */}
       <div className="h-20 bg-gray-800 shrink-0 flex justify-center items-center gap-4 z-50">
         <button onClick={toggleMute} className="px-6 py-2 bg-white rounded font-bold">
