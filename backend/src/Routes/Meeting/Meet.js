@@ -7,23 +7,26 @@ const wrapAsync = require("../../WrapAsync")
 const Support = require("../../Model/Support/Support")
 
 
-router.post("/host", Authenticate,wrapAsync, (async (req, res,next) => {
+router.post("/host", Authenticate,wrapAsync(async (req, res) => {
   let { hostname, meetingid } = req.body;
+  console.log(req.body);
+  
   if (!hostname || !meetingid) {
     return res.json({ message: "No id or hostName found" });
-  } else {
+  } 
     const newMeet = new Host({
       hostname,
       meetingid,
     });
     await newMeet.save();
-  }
   return res.json({
     auth:true,
     success: true,
     meetingId: meetingid,   
   });
 }));
+
+
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -47,9 +50,7 @@ router.post("/support",Authenticate, wrapAsync(async(req, res, next) => {
     <p>${msg}</p>
   `,
 });
-
-
-      res.json({message:"Message Sent sucessfully",auth:true})
+res.json({message:"Message Sent sucessfully",auth:true})
 }));
 
 module.exports = router;
